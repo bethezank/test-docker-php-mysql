@@ -1,0 +1,44 @@
+services:
+  php:
+    # image: php:apache
+    container_name: "php-apache"
+    # build: 
+    #   context: .
+    #   dockerfile: Dockerfile
+    build: .
+    volumes:
+      - ./src:/var/www/html/
+    ports:
+      - "8000:80"
+
+  db:
+    image: mysql:latest
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: learn-docker
+    ports:
+      - "3306:3306"
+    volumes:
+      # - btz_mysql_data:/var/lib/mysql   # ใช้ Docker Volume
+      - ./database:/var/lib/mysql         # ใช้ Local disk
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db # ระบุ host ที่จะให้ phpmyadmin ไปจัดการ ซึ่งสามารถใส่เป็นชื่อ container name (db) ได้เลย
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+
+# ใช้งาน Docker Volume
+# volumes:
+#   btz_mysql_data: # กำหนดชื่อ volume ที่ต้องการจะสร้าง
+#     driver: local
